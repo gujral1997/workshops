@@ -1,17 +1,27 @@
 <script>
-  import { sleep, pick_random } from "../utils";
+  import { sleep, pick_random, load_image } from "../utils";
   import { createEventDispatcher } from "svelte";
+  import * as eases from "svelte/easing";
+  import { fly, crossfade, scale } from "svelte/transition";
 
   import Card from "../components/Card.svelte";
 
   const dispatch = createEventDispatcher();
 
+  const [send, receive] = crossfade({
+    easing: eases.cubicOut,
+    duration: 300,
+  });
+
   export let selection;
+
   const load_details = async (celeb) => {
     const res = await fetch(
       `https://cameo-explorer.netlify.app/celebs/${celeb.id}.json`
     );
-    return await res.json();
+    const details = await res.json();
+    await load_image(details.image);
+    return details;
   };
   const promises = selection.map((round) =>
     Promise.all([load_details(round.a), load_details(round.b)])
@@ -22,6 +32,7 @@
   let i = 0;
   let last_result;
   let done = false;
+  let ready = true;
 
   $: score = results.filter((x) => x == "right").length;
 
@@ -40,7 +51,8 @@
 
     results[i] = last_result;
     last_result = null;
-    console.log(results, last_result);
+
+    await sleep(500);
 
     if (i < selection.length - 1) {
       i += 1;
@@ -155,14 +167,21 @@
 
 <div class="game-container">
   {#if done}
-    <div class="done">
+    <div
+      class="done"
+      in:scale={{ delay: 200, duration: 800, easing: eases.elasticOut }}>
       <strong>{score}/{results.length}</strong>
       <p>{pick_message(score / results.length)}</p>
       <button on:click={() => dispatch('restart')}>Back to main screen</button>
     </div>
-  {:else}
+  {:else if ready}
     {#await promises[i] then [a, b]}
-      <div class="game">
+      <div
+        class="game"
+        in:fly={{ duration: 200, y: 20 }}
+        out:fly={{ duration: 200, y: -20 }}
+        on:outrostart={() => (ready = false)}
+        on:outroend={() => (ready = true)}>
         <div class="card-container">
           <Card
             celeb={a}
@@ -197,6 +216,8 @@
 
 {#if last_result}
   <img
+    in:fly={{ x: 100, duration: 200 }}
+    out:send={{ key: i }}
     class="giant-result"
     alt="{last_result} answer"
     src="/icons/{last_result}.svg" />
@@ -205,10 +226,13 @@
 <div
   class="results"
   style="grid-template-columns: repeat({results.length}, 1fr)">
-  {#each results as result}
+  {#each results as result, i}
     <span class="result">
       {#if result}
-        <img src="/icons/{result}.svg" alt="{result} answer" />
+        <img
+          in:receive={{ key: i }}
+          src="/icons/{result}.svg"
+          alt="{result} answer" />
       {/if}
     </span>
   {/each}

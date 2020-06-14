@@ -1,4 +1,6 @@
 <script>
+  import { load_image } from "./utils";
+
   import { onMount } from "svelte";
   import { select } from "./select";
   import Welcome from "./screens/Welcome.svelte";
@@ -15,6 +17,8 @@
 
   onMount(() => {
     celebs_promise = load_celebs();
+    load_image("/icons/right.svg");
+    load_image("/icons/wrong.svg");
   });
 
   const load_celebs = async () => {

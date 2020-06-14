@@ -8,3 +8,12 @@ export function sleep(ms) {
     setTimeout(fullfil, ms);
   });
 }
+
+export function load_image(src) {
+  return new Promise((fullfil, reject) => {
+    const img = new Image();
+    img.onload = () => fullfil(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
