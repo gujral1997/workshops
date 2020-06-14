@@ -7,7 +7,7 @@
   let state = "welcome";
   let selection;
   let celebs_promise;
-  const start = async e => {
+  const start = async (e) => {
     const { celebs, lookup } = await celebs_promise;
     selection = select(celebs, lookup, e.detail.category.slug);
     state = "playing";
@@ -23,15 +23,15 @@
 
     const lookup = new Map();
 
-    data.forEach(c => {
+    data.forEach((c) => {
       lookup.set(c.id, c);
     });
 
     const subset = new Set();
-    data.forEach(c => {
+    data.forEach((c) => {
       if (c.reviews > -50) {
         subset.add(c);
-        c.similar.forEach(id => {
+        c.similar.forEach((id) => {
           subset.add(lookup.get(id));
         });
       }
@@ -39,7 +39,7 @@
 
     return {
       celebs: Array.from(subset),
-      lookup
+      lookup,
     };
   };
 </script>
@@ -61,6 +61,6 @@
   {#if state === 'welcome'}
     <Welcome on:select={start} />
   {:else}
-    <Game {selection} />
+    <Game {selection} on:restart={() => (state = 'welcome')} />
   {/if}
 </main>

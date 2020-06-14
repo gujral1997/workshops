@@ -5,7 +5,7 @@
 
   let selected = false;
 
-  const select = category => {
+  const select = (category) => {
     selected = true;
     dispatch("select", { category });
   };
@@ -17,7 +17,7 @@
     { slug: "creators", label: "Creators" },
     { slug: "models", label: "Models" },
     { slug: "musicians", label: "Msicians" },
-    { slug: "reality-tv", label: "Reality Tv" }
+    { slug: "reality-tv", label: "Reality Tv" },
   ];
 </script>
 
