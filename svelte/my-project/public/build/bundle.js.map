@@ -1,0 +1,1 @@
+{"version":3,"file":"bundle.js","sources":["../../src/main.js"],"sourcesContent":["var hello = () => {\n    console.log('hello!');\n};\n\nhello();"],"names":[],"mappings":"AAAA,IAAI,KAAK,GAAG,MAAM;AAClB,IAAI,OAAO,CAAC,GAAG,CAAC,QAAQ,CAAC,CAAC;AAC1B,CAAC,CAAC;AACF;AACA,KAAK,EAAE"}
